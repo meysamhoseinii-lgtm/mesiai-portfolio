@@ -74,3 +74,7 @@ The Apps Script/CRM receiver and private Sheet configuration are intentionally n
 ## License
 
 No open-source license is included. All rights remain with the owner unless a license is added.
+
+## Selected projects
+
+- [Koga](projects/koga/README.md) is a Persian-language Android map and hiking prototype. [Download the signed demo APK](https://raw.githubusercontent.com/meysamhoseinii-lgtm/mesiai-portfolio/main/projects/koga/Koga-0.1.0.apk).

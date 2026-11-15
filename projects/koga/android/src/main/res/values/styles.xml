@@ -1,0 +1,9 @@
+<resources>
+    <style name="KogaTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowBackground">#FBFCF8</item>
+        <item name="android:statusBarColor">#15352E</item>
+        <item name="android:navigationBarColor">#15352E</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

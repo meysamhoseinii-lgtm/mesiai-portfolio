@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14352e">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://tile.openstreetmap.org; connect-src https://graphhopper.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>کجا | نقشه و مسیر</title>
+<link rel="stylesheet" href="style.css">
+<script defer src="data.js"></script>
+<script defer src="map.js"></script>
+<script defer src="app.js"></script>
+</head>
+<body>
+<svg class="symbols" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-logo" viewBox="0 0 24 24"><path d="M12 22s7-7 7-13a7 7 0 1 0-14 0c0 6 7 13 7 13Z"/><path d="m8.5 12 3.5-5 3.5 5"/></symbol>
+<symbol id="i-car" viewBox="0 0 24 24"><path d="m5 16-1 3m15-3 1 3M4 12l2-6h12l2 6M4 12h16v5H4zM7 14.5h.01m10 0h.01"/></symbol>
+<symbol id="i-mountain" viewBox="0 0 24 24"><path d="m2 20 7-12 3 5 4-9 6 16H2Z"/><path d="m7 12 2 2 2-2m3-3 2 2 2-2"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 5 5"/></symbol>
+<symbol id="i-gps" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></symbol>
+<symbol id="i-settings" viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h14"/><circle cx="9" cy="6" r="2"/><circle cx="15" cy="12" r="2"/><circle cx="10" cy="18" r="2"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></symbol>
+<symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h8a3 3 0 0 1 0 6H8a3 3 0 0 0 0 6h8"/></symbol>
+<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5h16v-5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M6 12h12m-6-6v12"/></symbol>
+<symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s6-6 6-11a6 6 0 1 0-12 0c0 5 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15"/></symbol>
+</svg>
+<header class="topbar">
+  <div class="brand"><span class="brand-icon"><svg><use href="#i-logo"/></svg></span><div><strong>کجا<span>.</span></strong><small>نقشه و مسیر</small></div></div>
+  <button type="button" id="open-settings" class="icon-button" title="تنظیمات" aria-label="تنظیمات"><svg><use href="#i-settings"/></svg></button>
+</header>
+<main class="layout">
+  <section class="map-pane" aria-label="نقشهٔ ایران">
+    <div id="map" class="map" aria-label="نقشه، حرکت با کلیدهای جهت و بزرگ‌نمایی با مثبت و منفی" tabindex="0"><canvas id="base"></canvas><div id="tiles" aria-hidden="true"></div><canvas id="overlay"></canvas></div>
+    <div class="map-tag"><svg><use href="#i-map"/></svg><span id="map-label">نمای ایران</span></div>
+    <div class="map-controls">
+      <button class="icon-button" id="zoom-in" aria-label="بزرگ‌نمایی"><svg><use href="#i-plus"/></svg></button>
+      <button class="icon-button" id="zoom-out" aria-label="کوچک‌نمایی"><svg><use href="#i-minus"/></svg></button>
+      <button class="icon-button" id="gps" aria-label="موقعیت من"><svg><use href="#i-gps"/></svg></button>
+    </div>
+    <div class="map-footer"><span id="map-status">نقشهٔ پایهٔ ساده</span><a href="https://www.naturalearthdata.com/about/terms-of-use/" id="outline-credit" target="_blank" rel="noopener">Natural Earth</a><a href="https://www.openstreetmap.org/copyright" id="osm-credit" target="_blank" rel="noopener" hidden>© OpenStreetMap contributors</a></div>
+  </section>
+  <aside class="panel" aria-label="مسیریابی">
+    <div class="intro"><p class="eyebrow">مسیر بعدی</p><h1 id="panel-title">کجا می‌ریم؟</h1><p id="panel-subtitle">مقصدت رو پیدا کن و مسیرت رو روی نقشه ببین.</p></div>
+    <nav class="modes" aria-label="حالت مسیر">
+      <button id="car-mode" type="button" aria-pressed="true"><svg><use href="#i-car"/></svg> خودرو</button>
+      <button id="hike-mode" type="button" aria-pressed="false"><svg><use href="#i-mountain"/></svg> کوه‌پیمایی</button>
+    </nav>
+    <section id="car-panel">
+      <form id="search-form" role="search">
+        <label for="query" class="field-label">جست‌وجوی مقصد</label>
+        <div class="search-field"><svg><use href="#i-search"/></svg><input id="query" type="search" autocomplete="off" placeholder="نام شهر یا مکان…"><button type="submit">جست‌وجو</button></div>
+      </form>
+      <p id="search-status" class="quiet" role="status"></p>
+      <section id="destination-card" class="detail" hidden>
+        <div class="detail-top"><span class="detail-icon"><svg><use href="#i-pin"/></svg></span><div><h2 id="destination-name"></h2><p id="destination-info"></p></div></div>
+        <div class="stats" id="road-stats" hidden></div>
+        <div class="actions">
+          <button class="primary" id="route" type="button"><svg><use href="#i-route"/></svg>نمایش مسیر خودرو</button>
+          <button class="secondary" id="set-origin" type="button">این نقطه مبدأ باشه</button>
+        </div>
+      </section>
+      <div class="section-line"><h2 id="places-title">مقصدهای پیشنهادی</h2><span class="map-actions"><button class="text-button" id="pick-map" type="button" aria-pressed="false">انتخاب روی نقشه</button><button class="text-button" id="reset-map" type="button">نمای ایران</button></span></div>
+      <div id="places" class="rows"></div>
+    </section>
+    <section id="hike-panel" hidden>
+      <div class="section-line"><h2>مسیرهای منتخب</h2><button id="import-gpx" class="text-button" type="button"><svg><use href="#i-upload"/></svg>ورود GPX</button></div>
+      <input id="gpx" type="file" accept=".gpx,application/gpx+xml,application/xml,text/xml" hidden>
+      <div id="trail-list" class="rows"></div>
+      <section id="trail-detail" class="detail" hidden>
+        <div class="detail-top"><span class="detail-icon hike"><svg><use href="#i-mountain"/></svg></span><div><h2 id="trail-title"></h2><p id="trail-source"></p></div></div>
+        <div id="trail-stats" class="stats"></div>
+        <canvas id="profile" aria-label="نمودار ارتفاع مسیر" role="img" hidden></canvas>
+        <button id="trail-start" class="primary" type="button"><svg><use href="#i-car"/></svg>مسیر خودرو تا شروع</button>
+      </section>
+      <p class="quiet hiking-note">این نما برای مرور مسیر است. وضعیت پاکوب و شرایط روز را پیش از حرکت بررسی کن.</p>
+    </section>
+    <p id="notice" class="notice" role="status" hidden></p>
+    <footer class="panel-footer"><span></span>کجا · نسخهٔ نمونه‌کار</footer>
+  </aside>
+</main>
+<dialog id="settings">
+  <form id="settings-form">
+    <div class="modal-head"><h2>تنظیمات سرویس‌ها</h2><button class="icon-button" type="button" id="close-settings" aria-label="بستن"><svg><use href="#i-close"/></svg></button></div>
+    <label class="toggle"><input id="online-map" type="checkbox"> نقشهٔ آنلاین OpenStreetMap</label>
+    <label for="api-key" class="field-label">کلید GraphHopper</label>
+    <input id="api-key" class="api-key" type="password" autocomplete="off" placeholder="کلید شخصی برای جست‌وجو و مسیر خودرو" maxlength="160">
+    <p class="quiet">با کلید، جست‌وجو و مسیریابی به GraphHopper ارسال می‌شود. بدون کلید، جست‌وجوی مکان‌های نمونه و مرور مسیرهای کوه‌پیمایی در دسترس است.</p>
+    <p class="quiet"><a href="https://www.graphhopper.com/pricing/" target="_blank" rel="noopener">طرح‌ها و کلید GraphHopper</a> · <a href="https://www.graphhopper.com/attribution/" target="_blank" rel="noopener">انتساب داده</a></p>
+    <button class="primary" type="submit">ذخیرهٔ تنظیمات</button>
+  </form>
+</dialog>
+</body>
+</html>
